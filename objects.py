@@ -3,7 +3,7 @@ import random
 
 
 class Item:
-    def __init__(self, screen, img_path='/Users/michael.miranda/Downloads/resources/images/dude.png'):
+    def __init__(self, screen, img_path):
         self.screen = screen
         self.img = pygame.image.load(img_path)
         self.position = (0, 0)
