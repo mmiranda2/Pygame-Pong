@@ -1,4 +1,3 @@
-#!/opt/anaconda3/bin/python3
 from gameplay import Gameplay
 
 
