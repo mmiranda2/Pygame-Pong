@@ -1,0 +1,5 @@
+resources:
+  static:
+    ball: "ball.png"
+  settings:
+    screens: "screens.json"
