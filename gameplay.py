@@ -1,4 +1,5 @@
 import pygame
+import time
 from objects import Ball, Paddle, Scoreboard
 from pygame.locals import *
 
@@ -19,18 +20,36 @@ class Gameplay:
         self.scoreboard = Scoreboard(self.screen)
         self.objects = [self.ball, self.right_paddle, self.left_paddle, self.scoreboard]
 
+        self.reset = True
+        counter = 0
+        fps_start = time.time()
         while True:
-            self.play()
-    
-    def play(self):
+            if self.reset:
+                self.scoreboard.display_banner(True)
+                start = time.time()
+                while time.time() - start < 3:
+                    self.play(True)
+                self.reset = False
+                self.scoreboard.display_banner(False)
+            else:
+                self.play()
+            counter += 1
+            fps_end = time.time()
+            if fps_end - fps_start > 1:
+                self.scoreboard.set_fps(counter)
+                counter = 0
+                fps_start = fps_end
+
+    def play(self, lock_ball=False):
         self.screen.fill(0)
         for obj in self.objects:
             obj.show()
         pygame.display.flip()
-        
+
         self.apply_pressed_bars()
         self.apply_events()
-        self.apply_ball_movement()
+        if not lock_ball:
+            self.apply_ball_movement()
 
     def apply_pressed_bars(self):
         keys = pygame.key.get_pressed()
@@ -48,20 +67,23 @@ class Gameplay:
             if event.type==pygame.QUIT:
                 self.quit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_DOWN:
+                if event.key == pygame.K_q:
+                    self.quit()
+                elif event.key == pygame.K_DOWN:
                     self.right_paddle.down()
-                if event.key == pygame.K_UP:
+                elif event.key == pygame.K_UP:
                     self.right_paddle.up()
-                if event.key == pygame.K_s:
+                elif event.key == pygame.K_s:
                     self.left_paddle.down()
-                if event.key == pygame.K_w:
+                elif event.key == pygame.K_w:
                     self.left_paddle.up()
-    
+
     def apply_ball_movement(self):
         left_paddle_window, right_paddle_window = self.left_paddle.get_window(), self.right_paddle.get_window()
         goal = self.ball.next(left_paddle_window, right_paddle_window)
         if goal != 0:
             self.scoreboard.score(goal)
+            self.reset = True
 
     def quit(self):
         print('Goodbye.')
